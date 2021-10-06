@@ -1,0 +1,75 @@
+@startuml
+'https://plantuml.com/ie-diagram
+
+'ключевые отличия
+'состояние счёта хранится отдельным числом
+'данных меньше, карточные и остальные транзакции хранятся в одной таблице
+'курс не хранится, клиент будет видеть транзакцию в использованной валюте
+'
+'
+'
+
+class client {
+    id bigserial
+    name varchar8
+    surname varchar8
+    inn bigint uniqueindex
+    financial_phone bigint uniqueindex
+    birthday timestamp
+}
+
+class bank_account {
+    iban - pk bigserial
+    client_id bigint
+    amount numeric
+    currency
+}
+
+class card_account {
+    number - pk bigserial
+    client_id bigint
+    currency
+    amount numeric
+    expiration timestamp
+    type
+}
+
+enum card_type {
+    "Credit"
+    "Debet"
+}
+
+class transaction {
+    id bigserial
+    iban/card_number bigint
+    source iban/card_number bigint
+    amount numeric
+    currency
+    purpose varchar8
+    state
+    payment_time timestamp
+    merchant nullable varchar8
+}
+
+enum currency {
+    "UAH"
+    "USD"
+}
+
+enum transaction_state {
+    "Blocked"
+    "Completed"
+    "Canceled"
+}
+
+client ||--o{ bank_account
+client ||--o{ card_account
+bank_account }o--|| currency
+bank_account ||--o{ transaction
+card_account }o--|| currency
+card_account }o--|| card_type
+card_account ||--o{ transaction
+currency ||--o{ transaction
+transaction }o--|| transaction_state
+
+@enduml
