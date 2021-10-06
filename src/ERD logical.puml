@@ -1,0 +1,87 @@
+@startuml
+'https://plantuml.com/ie-diagram
+
+class Client {
+    Name
+    Surname
+    INN
+    Phone
+    Birthday
+}
+
+class BankAccount {
+    IBAN
+    Currency
+}
+
+class CardAccount {
+    Number
+    Currency
+    Expiration
+    Type
+}
+
+enum CardType {
+    Credit
+    Debet
+}
+
+class BankAccountTransaction {
+    IBAN
+    Source - IBAN or CardNumber
+    Amount
+    Currency
+    ExchangedRate nullable
+    Purpose
+    State
+    PaymentTime
+    CoreSyncTime nullable
+    TransactionInitiator
+    Merchant nullable
+}
+
+class CardAccountTransaction {
+    CardNumber
+    Source - IBAN or CardNumber
+    Amount
+    Currency
+    ExchangedRate nullable
+    Purpose
+    State
+    PaymentTime
+    CoreSyncTime nullable
+    TransactionInitiator
+    Merchant nullable
+}
+
+enum Currency {
+    UAH
+    USD
+}
+
+enum TransactionInitiator {
+    App
+    Core
+}
+
+enum TransactionState {
+    Blocked
+    Completed
+    Canceled
+}
+
+Client ||--o{ BankAccount
+Client ||--o{ CardAccount
+BankAccount }o--|| Currency
+BankAccount ||--o{ BankAccountTransaction
+CardAccount }o--|| Currency
+CardAccount }o--|| CardType
+CardAccount ||--o{ CardAccountTransaction
+Currency ||--o{ BankAccountTransaction
+Currency ||--o{ CardAccountTransaction
+BankAccountTransaction }o--|| TransactionInitiator
+BankAccountTransaction }o--|| TransactionState
+CardAccountTransaction }o--|| TransactionInitiator
+CardAccountTransaction }o--|| TransactionState
+
+@enduml

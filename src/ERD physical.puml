@@ -1,0 +1,99 @@
+@startuml
+'https://plantuml.com/ie-diagram
+
+class client {
+    id bigserial
+    name varchar8
+    surname varchar8
+    inn bigint uniqueindex
+    phone bigint uniqueindex
+    birthday timestamp
+}
+
+class bank_account {
+    iban - pk bigserial
+    client_id bigint
+    currency
+}
+
+class card_account {
+    number - pk bigserial
+    client_id bigint
+    currency
+    expiration timestamp
+    type
+}
+
+enum card_type {
+    "Credit"
+    "Debet"
+}
+
+class bank_account_transaction {
+    id bigserial
+    iban bigint index
+    source - iban or card_number bigint index
+    amount numeric, indexed
+    currency
+    exchange_rate nullable numeric
+    purpose varchar8
+    state
+    payment_time timestamp
+    core_sync_time nullable timestamp
+    transaction_initiator
+    merchant nullable varchar8
+}
+
+class card_account_transaction {
+    id bigserial
+    card_number bigint index
+    source - iban or card_number bigint index
+    amount numeric, indexed
+    currency
+    exchange_rate nullable numeric
+    purpose varchar8
+    state
+    payment_time timestamp
+    core_sync_time nullable timestamp
+    transaction_initiator
+    merchant nullable varchar8
+}
+
+class transaction_sync {
+    bank_account_transaction nullable bigint
+    card_account_transaction nullable bigint
+}
+
+enum currency {
+    "UAH"
+    "USD"
+}
+
+enum transaction_initiator {
+    "App"
+    "Core"
+}
+
+enum transaction_state {
+    "Blocked"
+    "Completed"
+    "Canceled"
+}
+
+client ||--o{ bank_account
+client ||--o{ card_account
+bank_account }o--|| currency
+bank_account ||--o{ bank_account_transaction
+card_account }o--|| currency
+card_account }o--|| card_type
+card_account ||--o{ card_account_transaction
+currency ||--o{ bank_account_transaction
+currency ||--o{ card_account_transaction
+bank_account_transaction }o--|| transaction_initiator
+bank_account_transaction }o--|| transaction_state
+bank_account_transaction ||--|| transaction_sync
+card_account_transaction }o--|| transaction_initiator
+card_account_transaction }o--|| transaction_state
+card_account_transaction ||--|| transaction_sync
+
+@enduml

@@ -1,0 +1,13 @@
+@startuml authentication
+'https://plantuml.com/sequence-diagram
+autonumber
+alt auth
+Client --> Server_digital: Authentication (phone, password)
+Server_digital -> Client: Validation (sms code)
+Client --> Server_digital: Authentication (phone, sms code, contract number)
+end
+alt data sync
+Client --> Server_digital: Calendar check (last update time)
+Server_digital -> Client: Calendar response (calendar, updated credit data)
+end
+@enduml

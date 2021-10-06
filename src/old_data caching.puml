@@ -1,0 +1,11 @@
+@startuml authentication
+'https://plantuml.com/sequence-diagram
+autonumber
+queue core as "Core transactions"
+participant backend as "Digital backend"
+database db as "Digital database"
+core <<-- backend : Listen for core updates
+backend <<-- backend : Map entities
+backend -->> db : Store data
+backend <<-- backend : Schedule notification
+@enduml

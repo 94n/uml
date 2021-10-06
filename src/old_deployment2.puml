@@ -1,0 +1,44 @@
+@startuml
+'https://plantuml.com/deployment-diagram
+title Deployment
+
+folder "Bank on-premise" {
+    node "Prod VMs" {
+            [REST prod]
+            [Bank data listener prod]
+            [Scheduler prod]
+            [Notification Listener prod]
+            [Mobile Push Processor prod]
+            [Obfuscator]
+            database "db prod"
+    }
+    node "Stage VMs" {
+                [REST stage]
+                [Bank data listener stage]
+                [Scheduler stage]
+                [Notification Listener stage]
+                [Mobile Push Processor stage]
+                database "stage db"
+        }
+        node "Core" {
+                        [Core prod]
+                   [Core sandbox]
+             queue "Kafka prod"
+             queue "Kafka core sandbox"
+        }
+}
+
+cloud "Digital cloud" {
+    node "Dev VMs" {
+        [REST]
+        [Bank data listener]
+        [Scheduler]
+        [Notification Listener]
+        [Mobile Push Processor]
+        queue Kafka
+        database db
+        storage "blob storage"
+    }
+}
+
+@enduml

@@ -1,0 +1,27 @@
+@startuml
+'https://plantuml.com/deployment-diagram
+actor Client
+agent Mobile
+agent BackendREST
+agent bankDataListener
+agent core
+agent NotificationScheduler
+agent NotificationListener
+agent MobilePushProcessor
+database db [
+Database
+----
+Core data cache
+]
+
+Client -->> Mobile
+Mobile -->> BackendREST
+BackendREST -->> db
+bankDataListener -->> db
+bankDataListener -->> core
+NotificationScheduler -->> MobilePushProcessor
+NotificationScheduler -->> db
+NotificationListener -->> core
+NotificationListener -->> MobilePushProcessor
+
+@enduml
