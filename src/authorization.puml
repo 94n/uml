@@ -1,0 +1,31 @@
+@startuml authentication
+'https://plantuml.com/sequence-diagram
+'Mobile means app and phone
+autonumber
+User -> Mobile: Register
+Mobile -> User: Registration screen
+User -> Mobile: phone number
+Mobile -> Digital: Check user by phone
+Digital -> Core: Check user by phone
+Core -> Digital: If user exists, send second factor
+Digital -> Mobile: Send SMS with generated code
+User -> Mobile: Enter confirm code
+Mobile -> Digital: Send confirmation code
+Digital -> Digital: Check code
+Digital -> Digital: Do nothing if code is incorrect
+Digital -> Mobile: Send OK message if code is valid
+Mobile -> User: Show second factor form
+User -> Mobile: Enter second factor
+Mobile -> Digital: Send second factor
+Digital -> Digital: Check second factor
+Digital -> Mobile: Send OK message
+Mobile -> User: Ask new password
+User -> Mobile: Enter new password
+Mobile -> Digital: Send new password
+Digital -> Core: New mobile app user registered
+Core -> Digital: Sync static data
+Digital -> Mobile: Send static data
+Mobile -> User: Show main app screen
+Core -> Digital: Initial transaction sync
+
+@enduml
