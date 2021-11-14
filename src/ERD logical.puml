@@ -65,6 +65,7 @@ enum TransactionInitiator {
 }
 
 enum TransactionState {
+    New
     Blocked
     Completed
     Canceled

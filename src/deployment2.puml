@@ -5,19 +5,19 @@ title Deployment
 folder "Bank on-premise" {
     node "Prod VMs" {
             [REST prod]
-            [Bank data listener prod]
+            [Bank data syncer prod]
             [Scheduler prod]
-            [Notification Listener prod]
-            [Mobile Push Processor prod]
+            [SMS Processor prod]
+            [Push Processor prod]
             [Obfuscator]
             database "db prod"
     }
     node "Stage VMs" {
                 [REST stage]
-                [Bank data listener stage]
+                [Bank data syncer stage]
                 [Scheduler stage]
-                [Notification Listener stage]
-                [Mobile Push Processor stage]
+                [SMS Processor stage]
+                [Push Processor stage]
                 database "stage db"
         }
         node "Core" {
@@ -31,13 +31,12 @@ folder "Bank on-premise" {
 cloud "Digital cloud" {
     node "Dev VMs" {
         [REST]
-        [Bank data listener]
+        [Bank data syncer]
         [Scheduler]
-        [Notification Listener]
-        [Mobile Push Processor]
+        [SMS Processor]
+        [Push Processor]
         queue Kafka
         database db
-        storage "blob storage"
     }
 }
 

@@ -1,0 +1,41 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+User -> Mobile_App: clicks Pay button
+Mobile_App -> Digital_Cloud: mobile payment
+Digital_Cloud -> Portmone: Create payment
+Digital_Cloud -> Digital_Cloud: 1 minute request timeout detected
+Digital_Cloud -> Digital_Cloud: retry 3 times
+alt single payment failure
+Digital_Cloud -> Mobile_App: Payment failure, try later
+Mobile_App -> User: Please try again later
+end
+alt all portmone requests are timed out during 1 hour or more
+Digital_Cloud -> Digital_Cloud: store failed user id
+Digital_Cloud -> Mobile_App: payment service temporarily unavailable
+Mobile_App -> User: Service unavailable, we will notify when fixed
+Digital_Cloud -> Digital_Cloud: other user's payment was succesful
+Digital_Cloud -> Push_Provider: notify failed user about service restoring
+Push_Provider -> Mobile_App: payment service restored
+Mobile_App -> User: Show service restored notification
+end
+@enduml
+
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+User -> Mobile_App: clicks Pay button
+Mobile_App -> Digital_Cloud: mobile payment
+Digital_Cloud -> Digital_Cloud: check total money on cached account
+Digital_Cloud -> Digital_Premise: Block Money
+Digital_Premise --> Digital_Cloud: request timeout
+Digital_Cloud -> Digital_Cloud: retry 3 times
+Digital_Cloud -> Digital_Cloud: store unaccepted transaction
+Digital_Cloud -> Portmone: Create payment
+Portmone -> Digital_Cloud: Ok
+Digital_Cloud -> Mobile_App: Payment success
+Mobile_App -> User: Payment success
+Digital_Cloud -> Digital_Premise: sync transactions when available
+@enduml
