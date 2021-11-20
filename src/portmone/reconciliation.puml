@@ -1,0 +1,35 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+alt hourly failure checks
+Cloud -> Portmone: Every hour call bills.exported for today (not earlier)
+Portmone -> Cloud: today Bills registry of money exported to providers
+Cloud -> Cloud: Find newly found bills with RETURN status, update them in our system
+Cloud -> Cloud: Initiate portmone retry of returned transactions, which were not retried yet
+Cloud -> Cloud: Failed second time: Mark transactions to be returned during evening clearing
+Cloud --> Client: immediately notify about errors
+end
+alt Reconciliation 2h before End of bank day
+alt Portmone connection failure
+Cloud -> PortmoneManager: retry 1 hour, then stop reconcilation for today, don't send money, send email to Portmone owners
+end
+Cloud -> Portmone: bills.exported, 7 calls - for today and prev 6 days
+Portmone -> Cloud: 7 responses with registries of money sent to providers
+Cloud -> Cloud: extract bills exported between yesterday reconciliation and midnight
+Cloud -> Cloud: Init payment retry for returned and not yet retried bills (see other diagram)
+Cloud -> Cloud: collect yesterday evening bills, today bills and update our bill records
+Cloud -> Cloud: collect newly finished during last week bills
+Cloud -> Portmone: call bills.balance for each active service provider
+Portmone -> Cloud: balance for each service provider
+Cloud -> Cloud: Check balances, negative balance values add as corrective transactions to clearing collection
+Cloud -> Premise: pay all good bills and corrections (grouped by provider), cancel retried and failed again transactions
+Cloud --> ChiefBankAccounter: Send email to notify about corrections in payments
+Premise -> Core: Request Clearing (pay good bills, cancel bad)
+Core --> Portmone: perform transactions (async process)
+Cloud -> Portmone: bills.paymentOrder (send our registry, transactions grouped by payee (service provider))
+Cloud -> Cloud: search all week portmone registries and collect bills for RETURN status
+Cloud -> Client: notify about pays with errors
+Cloud -> Portmone: notification email about bills with errors, to push portmone to improve service
+end
+@enduml

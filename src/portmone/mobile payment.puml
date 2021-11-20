@@ -1,0 +1,19 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+User -> Cloud: Charge
+Cloud -> Cloud: create new bill record
+Cloud -> Premise: Block money
+Premise -> Core: Block money
+Core -> Premise: ok
+Premise -> Cloud: ok
+Cloud -> Portmone: bills.createByPhone
+Portmone -> Cloud: Bill created
+Cloud -> Cloud: save bill
+Cloud -> Portmone: bills.pay (to charge phone now)
+Portmone -> Cloud: bill payed
+Cloud -> Cloud: update stored bill details
+Cloud -> User: ok
+@enduml

@@ -1,0 +1,118 @@
+@startuml
+'https://plantuml.com/ie-diagram
+
+class bill {
+    id
+    portmone_bill_id
+    client_id
+    phone_number - any to charge
+    amount numeric
+    status
+    status_updated_at timestamp
+    exportedToProvider boolean
+    description varchar2 nullable
+    createdAt timestamp
+    payedAt timestamp nullable
+    transactionId nullable
+}
+
+class client {
+    id
+    premise_client_id
+    financial_phone uniqueindex
+}
+
+class client_phone {
+    client_id
+    phone_number
+    mobile_operator_id
+}
+
+class bank_account {
+    iban - pk
+    client_id
+    amount numeric
+    currency
+}
+
+class card_account {
+    number - pk
+    client_id
+    currency
+    amount numeric
+    expiration timestamp
+    card_type
+}
+
+enum card_type {
+    "Credit"
+    "Debet"
+}
+
+class client_transaction {
+    id
+    source /*client's iban/card_number*/
+    grouped_transaction_id nullable
+    amount numeric
+    currency
+    created_at timestamp
+}
+
+enum currency {
+    "UAH"
+    "USD"
+}
+
+enum transaction_status {
+    "Created"
+    "Blocked" /*money blocked*/
+    "Completed"
+    "Canceled"
+}
+
+class service_provider {
+    id
+    portmone_provider_id
+    name
+    active boolean /*true if it had bills last week*/
+    last_active_at timestamp
+}
+
+class grouped_transaction {
+    id
+    service_provider_id
+    amount numeric
+    currency
+    transaction_status
+    created_at timestamp
+    status_updated_at timestamp nullable
+}
+
+class correction {
+    id
+    amount
+    currency
+    service_provider_id /*balance checked per provider*/
+    transaction_status
+    created_at timestamp
+}
+
+client ||--o{ bill
+client ||--o{ bank_account
+client ||--o{ card_account
+client ||--o{ client_phone
+client }|--o{ service_provider
+bill ||--o{ client_transaction
+bank_account }o--|| currency
+bank_account ||--o{ client_transaction
+card_account }o--|| currency
+card_account }o--|| card_type
+card_account ||--o{ client_transaction
+currency ||--o{ client_transaction
+client_transaction }o--|| transaction_status
+grouped_transaction }o--|| transaction_status
+service_provider ||--o{ grouped_transaction
+grouped_transaction ||--o{ client_transaction
+correction ||--o{ service_provider
+
+@enduml
